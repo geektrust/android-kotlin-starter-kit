@@ -13,5 +13,8 @@
     ".gtignore": true,
     "LICENSE": true,
     "package.json": true
-  }
+  },
+  "kotlin.languageServer.path": "/opt/kotlin-language-server/bin/kotlin-language-server",
+  "kotlin.debugAdapter.enabled": false,
+  "emulator.emulatorPath": "/opt/android-sdk/emulator"
 }
