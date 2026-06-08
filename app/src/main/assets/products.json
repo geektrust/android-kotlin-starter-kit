@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "name": "Wireless Noise-Cancelling Headphones",
+    "price": 199.99,
+    "discountPercentage": 15.0
+  },
+  {
+    "id": "2",
+    "name": "Mechanical Keyboard",
+    "price": 149.99
+  },
+  {
+    "id": "3",
+    "name": "USB-C 7-in-1 Hub",
+    "price": 49.99,
+    "discountPercentage": 10.0
+  },
+  {
+    "id": "4",
+    "name": "Ergonomic Monitor Stand",
+    "price": 79.99
+  },
+  {
+    "id": "5",
+    "name": "1080p Webcam",
+    "price": 89.99,
+    "discountPercentage": 20.0
+  },
+  {
+    "id": "6",
+    "name": "LED Desk Lamp",
+    "price": 34.99
+  },
+  {
+    "id": "7",
+    "name": "XL Mouse Pad",
+    "price": 24.99,
+    "discountPercentage": 5.0
+  },
+  {
+    "id": "8",
+    "name": "Adjustable Laptop Stand",
+    "price": 59.99
+  },
+  {
+    "id": "9",
+    "name": "Portable Phone Charger 20000mAh",
+    "price": 44.99,
+    "discountPercentage": 25.0
+  },
+  {
+    "id": "10",
+    "name": "Bluetooth Speaker",
+    "price": 69.99
+  }
+]
