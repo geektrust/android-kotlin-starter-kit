@@ -17,3 +17,7 @@ release/
 build/
 .kotlin/
 app/build/
+gradlew
+gradlew.bat
+build.gradle.kts
+gradle.properties
