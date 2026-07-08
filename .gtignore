@@ -3,3 +3,17 @@
 README.md
 .gtignore
 LICENSE
+*.apk
+*.aar
+*.ap_
+*.aab
+*.dex
+*.class
+bin/
+gen/
+out/
+release/
+.gradle/
+build/
+.kotlin/
+app/build/
