@@ -2,16 +2,18 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
     namespace = "com.assemble.productlisting"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.assemble.productlisting"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
     }
@@ -55,6 +57,16 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.gson)
+
+    // Dependency injection — a candidate may use EITHER approach below.
+    // Classic Dagger 2 (manual @Component / @Module wiring)
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
+
+    // Hilt (Dagger-based, less boilerplate; @HiltAndroidApp / @HiltViewModel)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     debugImplementation(libs.androidx.ui.tooling)
 }
