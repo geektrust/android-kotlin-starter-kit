@@ -1,0 +1,43 @@
+name: Build and Release Cache
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows you to manually trigger it for testing
+
+jobs:
+  build-and-release-cache:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          # We do not use the standard setup-java caching because we want to capture the raw .gradle directory ourselves.
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Compile and Hydrate Cache
+        # This command forces Gradle to download all dependencies and run all KSP generators
+        run: ./gradlew compileDebugSources --no-daemon --build-cache
+
+      - name: Compress Build Cache
+        # Zips the .gradle directory and the app/build directory
+        run: zip -r build-cache.zip .gradle/ app/build/
+
+      - name: Update 'latest' Git Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: Latest Build Cache
+          files: build-cache.zip
+          # If the release exists, this action will update the file attached to it
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
