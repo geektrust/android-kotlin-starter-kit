@@ -34,6 +34,7 @@ jobs:
         # CRITICAL: We must also match the exact GRADLE_USER_HOME path used in the container (/root/.gradle)
         # otherwise task inputs containing dependency paths will differ and KSP will re-execute!
         run: |
+          sudo chmod 755 /root
           sudo mkdir -p /root/.gradle
           sudo chown -R $USER /root/.gradle
           export GRADLE_USER_HOME=/root/.gradle
