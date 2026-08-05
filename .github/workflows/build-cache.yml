@@ -31,13 +31,25 @@ jobs:
 
       - name: Compile and Hydrate Cache
         # We run the standard assemble tasks to cache all KSP generated code and dependencies
-        # CRITICAL: We must also match the exact GRADLE_USER_HOME path used in the container (/root/.gradle)
-        # otherwise task inputs containing dependency paths will differ and KSP will re-execute!
+        # CRITICAL: We must also match the exact GRADLE_USER_HOME, ANDROID_HOME, and JAVA_HOME
+        # paths used in the container, otherwise task inputs containing dependency paths will 
+        # differ and Gradle will re-execute them!
         run: |
           sudo chmod 755 /root
           sudo mkdir -p /root/.gradle
           sudo chown -R $USER /root/.gradle
           export GRADLE_USER_HOME=/root/.gradle
+          
+          sudo mkdir -p /opt
+          sudo ln -s $ANDROID_HOME /opt/android-sdk
+          export ANDROID_HOME=/opt/android-sdk
+          export ANDROID_SDK_ROOT=/opt/android-sdk
+          
+          sudo mkdir -p /usr/lib/jvm
+          sudo ln -s $JAVA_HOME /usr/lib/jvm/temurin-21-jdk-amd64
+          export JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
+          export PATH=$JAVA_HOME/bin:$PATH
+          
           cd /home/user/workspace/project
           chmod +x ./gradlew
           ./gradlew assembleDebug assembleRelease --no-daemon --build-cache
