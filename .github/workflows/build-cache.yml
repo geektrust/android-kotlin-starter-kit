@@ -57,8 +57,10 @@ jobs:
       - name: Compress Build Cache
         # We zip the cache from the exact absolute path
         run: |
+          sudo cp -R /root/.gradle /home/user/workspace/project/root-gradle-cache
+          sudo chown -R $USER /home/user/workspace/project/root-gradle-cache
           cd /home/user/workspace/project
-          zip -r $GITHUB_WORKSPACE/build-cache.zip .gradle/ app/build/
+          zip -r $GITHUB_WORKSPACE/build-cache.zip .gradle/ app/build/ root-gradle-cache/
 
       - name: Update 'latest' Git Release
         uses: softprops/action-gh-release@v1
