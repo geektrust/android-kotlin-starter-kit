@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allows you to manually trigger it for testing
+  workflow_dispatch:
 
 jobs:
   build-and-release-cache:
@@ -19,18 +19,28 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          # We do not use the standard setup-java caching because we want to capture the raw .gradle directory ourselves.
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+      - name: Prepare Exact Absolute Path
+        # Gradle's UP-TO-DATE checks are highly sensitive to absolute paths.
+        # By compiling the code in the exact same directory path as the IDE container, 
+        # we guarantee a 100% cache hit!
+        run: |
+          sudo mkdir -p /home/user/workspace/project
+          sudo chown -R $USER /home/user/workspace/project
+          cp -a . /home/user/workspace/project/
 
       - name: Compile and Hydrate Cache
-        # This command forces Gradle to download all dependencies and run all KSP generators
-        run: ./gradlew compileDebugSources --no-daemon --build-cache
+        # We run the standard assemble tasks to cache all KSP generated code and dependencies
+        run: |
+          cd /home/user/workspace/project
+          chmod +x ./gradlew
+          ./gradlew assembleDebug assembleRelease --no-daemon --build-cache
 
       - name: Compress Build Cache
-        # Zips the .gradle directory and the app/build directory
-        run: zip -r build-cache.zip .gradle/ app/build/
+        # We zip the cache from the exact absolute path
+        run: |
+          cd /home/user/workspace/project
+          zip -r $GITHUB_WORKSPACE/build-cache.zip .gradle/ app/build/
 
       - name: Update 'latest' Git Release
         uses: softprops/action-gh-release@v1
@@ -38,6 +48,5 @@ jobs:
           tag_name: latest
           name: Latest Build Cache
           files: build-cache.zip
-          # If the release exists, this action will update the file attached to it
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
