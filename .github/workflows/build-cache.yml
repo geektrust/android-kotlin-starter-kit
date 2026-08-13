@@ -5,10 +5,22 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to upload caches to'
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - uat
+          - prod
+        default: 'dev'
 
 jobs:
   build-and-release-cache:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
 
     steps:
       - name: Checkout repository
