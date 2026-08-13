@@ -20,11 +20,28 @@ on:
 jobs:
   build-and-release-cache:
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'dev' }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set environment specific secrets
+        id: set-secrets
+        run: |
+          ENV="${{ github.event.inputs.environment || 'dev' }}"
+          if [ "$ENV" == "dev" ]; then
+            echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.DEV_AZURE_STORAGE_ACCOUNT_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.DEV_AZURE_STORAGE_ACCOUNT_KEY }}" >> $GITHUB_ENV
+          elif [ "$ENV" == "qa" ]; then
+            echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.QA_AZURE_STORAGE_ACCOUNT_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.QA_AZURE_STORAGE_ACCOUNT_KEY }}" >> $GITHUB_ENV
+          elif [ "$ENV" == "uat" ]; then
+            echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.UAT_AZURE_STORAGE_ACCOUNT_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.UAT_AZURE_STORAGE_ACCOUNT_KEY }}" >> $GITHUB_ENV
+          elif [ "$ENV" == "prod" ]; then
+            echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.PROD_AZURE_STORAGE_ACCOUNT_NAME }}" >> $GITHUB_ENV
+            echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.PROD_AZURE_STORAGE_ACCOUNT_KEY }}" >> $GITHUB_ENV
+          fi
 
       - name: Log in to Azure Container Registry
         uses: docker/login-action@v3
@@ -80,7 +97,7 @@ jobs:
           STARTER_KIT_NAME: ${{ github.event.repository.name }}
         run: |
           sudo mkdir -p /mnt/gradle-cache
-          sudo mount -t cifs //${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}.file.core.windows.net/gradle-cache /mnt/gradle-cache -o vers=3.0,username=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }},password=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }},dir_mode=0777,file_mode=0777,serverino
+          sudo mount -t cifs //${{ env.AZURE_STORAGE_ACCOUNT_NAME }}.file.core.windows.net/gradle-cache /mnt/gradle-cache -o vers=3.0,username=${{ env.AZURE_STORAGE_ACCOUNT_NAME }},password=${{ env.AZURE_STORAGE_ACCOUNT_KEY }},dir_mode=0777,file_mode=0777,serverino
           
           sudo rm -rf /mnt/gradle-cache/android/${STARTER_KIT_NAME}/* || true
           sudo mkdir -p /mnt/gradle-cache/android/${STARTER_KIT_NAME}
@@ -89,8 +106,8 @@ jobs:
 
       - name: Upload to Azure File Share
         env:
-          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
-          AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+          AZURE_STORAGE_ACCOUNT: ${{ env.AZURE_STORAGE_ACCOUNT_NAME }}
+          AZURE_STORAGE_KEY: ${{ env.AZURE_STORAGE_ACCOUNT_KEY }}
           STARTER_KIT_NAME: ${{ github.event.repository.name }}
         run: |
           az storage file upload-batch \
