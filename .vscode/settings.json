@@ -9,8 +9,11 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     ".theia": true,
+    ".vscode": true,
+    ".github": true,
     ".gitignore": true,
     ".gtignore": true,
+    ".starter_kit_name": true,
     "LICENSE": true,
     "package.json": true
   },
